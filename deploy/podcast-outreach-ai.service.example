@@ -1,0 +1,26 @@
+# Template only. Place this at /etc/systemd/system/podcast-outreach-ai.service
+# after configuring the service account and /opt/podcast-outreach-ai.
+[Unit]
+Description=Podcast Outreach AI (private Streamlit research service)
+After=network-online.target ollama.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=podcastai
+Group=podcastai
+WorkingDirectory=/opt/podcast-outreach-ai
+Environment=PYTHONUNBUFFERED=1
+# Optional credentials should be stored in this root-controlled environment file.
+EnvironmentFile=-/etc/podcast-outreach-ai.env
+ExecStart=/opt/podcast-outreach-ai/.venv/bin/python -m streamlit run app.py --server.address=127.0.0.1 --server.port=8501 --server.headless=true
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/podcast-outreach-ai
+
+[Install]
+WantedBy=multi-user.target

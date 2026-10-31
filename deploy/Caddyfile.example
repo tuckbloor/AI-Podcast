@@ -1,0 +1,10 @@
+# Example only: replace the hostname and the password hash before using.
+# Caddy should be installed and DNS for your hostname pointed at this server.
+# Do NOT expose Streamlit or Ollama directly to the public internet.
+podcast.example.com {
+    encode zstd gzip
+    basic_auth {
+        operator REPLACE_WITH_CADDY_HASH_PASSWORD
+    }
+    reverse_proxy 127.0.0.1:8501
+}
