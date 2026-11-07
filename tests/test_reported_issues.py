@@ -136,19 +136,21 @@ class OllamaRecoveryTests(unittest.TestCase):
 
 
 class UIRegressionTests(unittest.TestCase):
-    def test_input_is_explicit_and_white_not_disabled(self):
-        app = (Path(__file__).parent.parent / 'app.py').read_text(encoding='utf-8')
-        self.assertIn('Tell the agent what to find', app)
-        self.assertIn('background-color:#fff !important;', app)
-        self.assertIn('st.text_area(', app)
-        self.assertNotIn("Describe your friend's podcast", app)
+    def test_new_research_prompt_is_editable_and_not_disabled(self):
+        app = (Path(__file__).parent.parent / 'app/app.py').read_text(encoding='utf-8')
+        self.assertIn("ui.text_area('What podcasts should we find?'", app)
+        self.assertIn("key='podcast_query'", app)
+        self.assertNotIn('streamlit', app.lower())
 
-    def test_live_status_shows_ollama_streaming_and_retry(self):
-        app = (Path(__file__).parent.parent / 'app.py').read_text(encoding='utf-8')
-        self.assertIn('waiting for the first generated text', app)
-        self.assertIn('Ollama is generating a reply', app)
-        self.assertIn('Retrying that podcast separately', app)
+    def test_progress_and_csv_export_are_visible(self):
+        app = (Path(__file__).parent.parent / 'app/app.py').read_text(encoding='utf-8')
+        self.assertIn('Refresh status', app)
+        self.assertIn('Research activity', app)
+        self.assertIn('Evidence-ranked matches', app)
         self.assertIn('Download results as CSV', app)
+        worker = (Path(__file__).parent.parent / 'podcast_workspace.py').read_text(encoding='utf-8')
+        self.assertIn("on_status=status", worker)
+        self.assertIn("status='completed'", worker)
 
 
 if __name__ == '__main__':

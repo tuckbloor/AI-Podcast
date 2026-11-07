@@ -96,8 +96,9 @@ class ReleaseQualityTests(TestCase):
 
     def test_ui_sections_release_readiness(self):
         from pathlib import Path
-        source = (Path(__file__).resolve().parents[1] / 'app.py').read_text(encoding='utf-8')
-        self.assertIn('Strong matches', source)
-        self.assertIn('Strong topic matches — prioritise these hosts', source)
-        self.assertIn('Possible matches — review evidence before outreach', source)
-        self.assertIn('FIND MATCHING PODCASTS', source)
+        source = (Path(__file__).resolve().parents[1] / 'app/app.py').read_text(encoding='utf-8')
+        self.assertIn('Find matching podcasts', source)
+        self.assertIn('Evidence-ranked matches', source)
+        self.assertIn('Refresh status', source)
+        self.assertIn('Download results as CSV', source)
+        self.assertIn('Nothing is emailed', source)

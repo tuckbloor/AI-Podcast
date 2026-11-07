@@ -1,0 +1,51 @@
+name: Podcast Outreach AI tests and portable Windows installer
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r requirements.txt -r requirements-dev.txt
+      - run: python -m pip install -e ./framework/engine
+      - run: python -m pytest -q tests
+  windows-installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Test suite and source layout
+        shell: pwsh
+        run: |
+          python -m pip install -r requirements.txt -r requirements-dev.txt
+          python -m pip install -e ./framework/engine
+          python -m pytest -q tests
+          $bats = @(Get-ChildItem -Recurse -File -Filter '*.bat')
+          if ($bats.Count -ne 2) { throw 'Exactly two BAT files required' }
+      - name: Real installer window smoke test
+        shell: pwsh
+        run: |
+          python tests/gui_smoke.py
+          if ($LASTEXITCODE -ne 0) { throw 'Tk installer GUI failed' }
+      - name: Install AI App Server prerequisite and separate Podcast instance
+        shell: pwsh
+        run: |
+          $server = Join-Path $env:RUNNER_TEMP 'Podcast AI App Server Prerequisite'
+          $podcast = Join-Path $env:RUNNER_TEMP 'Podcast Application Instance'
+          python tools/podcast_install.py --install-server "$server" --podcast "$podcast"
+          if ($LASTEXITCODE -ne 0) { throw 'Full Windows install failed' }
+          if (!(Test-Path "$server\.venv\Scripts\python.exe")) { throw 'Server Python missing' }
+          if (!(Test-Path "$podcast\.venv\Scripts\python.exe")) { throw 'Podcast Python missing' }
+          & "$podcast\.venv\Scripts\python.exe" "$podcast\tools\podcast_launcher.py" start --background
+          if ($LASTEXITCODE -ne 0) { throw 'Podcast start failed' }
+          & "$podcast\.venv\Scripts\python.exe" "$podcast\tools\podcast_launcher.py" status
+          & "$podcast\.venv\Scripts\python.exe" "$podcast\tools\podcast_launcher.py" stop
+          if ($LASTEXITCODE -ne 0) { throw 'Podcast stop failed' }

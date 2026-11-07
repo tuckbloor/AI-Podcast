@@ -1,61 +1,21 @@
-# Python virtual environments and local environments
+# User-owned runtime files - never commit these or overwrite in an upgrade
 .venv/
 venv/
-env/
-ENV/
-.python-version
-
-# Secrets and per-machine configuration
+data/
+config/
+backups/
+*.sqlite3
+*.sqlite3-*
+*.db
+*.csv
 .env
 .env.*
 !.env.example
-.streamlit/secrets.toml
-*.pem
-*.key
-*credentials*.json
-
-# Python bytecode, caches and test artifacts
+*.log
 __pycache__/
 *.py[cod]
-*$py.class
 .pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.tox/
-.nox/
-.coverage
-.coverage.*
-htmlcov/
-coverage.xml
-
-# Build and distribution files
-build/
-dist/
 *.egg-info/
-.eggs/
-
-# Local application output and generated research
-logs/
-*.log
-output/
-outputs/
-exports/
-reports/
-.temp/
-tmp/
-*.sqlite
-*.sqlite3
-*.db
-
-# IDE, OS and local editor settings
-.idea/
-.vscode/
-.vs/
+.coverage
 .DS_Store
-Thumbs.db
-Desktop.ini
-*.swp
-*.swo
-
-# Intentionally track README.md, LICENSE, all source/tests,
-# .streamlit/config.toml, and the root-level images/ screenshots.
+.ai-podcast-install.json
